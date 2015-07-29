@@ -1,0 +1,48 @@
+INSERT:
+
+
+CREATE TRIGGER copymcninvoices_ins_up
+ON
+copymcninvoices
+AFTER INSERT,UPDATE
+as 
+IFnot exists( SELECT* FROM copymcnvendors WHERE vendoridIN (SELECT vendorid FROM inserted))
+BEGIN 
+RAISERROR('Vendor is invalied',1,1)
+ROLLBACKTRAN
+END
+----------------------------------------------------
+CREATE TRIGGER [Add_LTD] on dbo.Company
+AFTER INSERT AS
+   UPDATE dbo.Company
+   SET Name = Name + ' LTD'
+   FROM Inserted i
+   WHERE dbo.Company.CompanyID = i.CompanyID
+     AND Name NOT LIKE '% LTD'
+
+
+UPDATE:
+
+
+CREATE TRIGGER tr_Employees_U on Employees FOR UPDATE AS
+    IF UPDATE(lastname)
+    BEGIN
+        RAISERROR ('cannot change lastname', 16, 1)
+        ROLLBACK TRAN
+        RETURN
+    END
+GO
+
+
+DELETE:
+
+createtrigger copymcnvendors_del_up
+oncopymcnvendors
+afterdelete,update
+as
+ifexists ( select* fromdeleted joincopymcninvoices
+ondeleted.vendorid=copymcninvoices.vendorid)
+begin 
+raiserror('Vendor ID is in Use in other table.',1,1)
+rollbackTRAN 
+END
