@@ -1,10 +1,4 @@
 INSERT:
-INSERT:
-INSERT:
-INSERT:
-INSERT:
-
-
 
 
 CREATE TRIGGER copymcninvoices_ins_up
